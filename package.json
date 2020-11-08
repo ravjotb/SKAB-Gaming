@@ -6,11 +6,29 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "bcrypt": "^5.0.0",
+    "bcryptjs": "^2.4.3",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "ejs": "~2.6.1",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
-    "morgan": "~1.9.1"
-  }
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.6.3",
+    "mongoose": "^5.10.13",
+    "morgan": "~1.9.1",
+    "nodemon": "^2.0.6"
+  },
+  "description": "With the pandemic, people are looking for better ways to connect online more than ever. We believe one of the best ways to connect with others in an online environment is through video games. However, there is a lot of difficulty in trying to play a video game with others. Not all consoles are compatible with each other, and some games only work on PCs and not Macs.",
+  "main": "Users.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ravjotb/SKAB-Gaming.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ravjotb/SKAB-Gaming/issues"
+  },
+  "homepage": "https://github.com/ravjotb/SKAB-Gaming#readme"
 }
