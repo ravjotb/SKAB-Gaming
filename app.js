@@ -3,12 +3,24 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+//Import the mongoose module
+var mongoose = require('mongoose');
 
 var app = express();
 
+//Set up default mongoose connection
+mongoose.connect('mongodb://localhost:27017/skab', {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.set('useCreateIndex', true)
+//Get the default connection
+var db = mongoose.connection;
+//Bind connection to error event (to get notification of connection errors)
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () =>{
+  console.log('we\'re connected!');
+});
+
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
