@@ -2,12 +2,44 @@ var express = require("express");
 var router = express.Router();
 const Question= require('../models/question');
 const Game= require('../models/game');
-
+const User= require('../models/user');
+const passport= require('passport');
 /* GET home page. */
 
 router.get("/", function (req, res, next) {
   res.render("index", { title: "SKAB-Gaming" });
+});
 
+router.get("/register", function(req, res, next){
+  res.render("register");
+});
+
+router.post("/register", async function(req, res, next){
+  console.log(req.body);
+  try {
+    const user = await User.register(new User(
+      {username:req.body.username, email: req.body.email}), req.body.password);
+    console.log('user registered!');
+    res.redirect('/');
+  } catch(err) {
+    console.log('Error:', err);
+    res.redirect('/register', err);
+  }
+});
+
+router.get("/login", function(req, res, next){
+  res.render("login");
+})
+
+router.post("/login", passport.authenticate('local',{
+  successRedirect:'/',
+  failureRedirect:'/login'
+}))
+
+router.get("/logout", function(req, res, next){
+  req.logout();
+  res.redirect('/');
+})
 
 router.get('/create-game', function(req, res, next){
   res.render('creategame', { });
