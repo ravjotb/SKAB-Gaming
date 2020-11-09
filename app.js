@@ -11,7 +11,7 @@ var passport= require('passport');
 var app = express();
 
 //Set up default mongoose connection
-mongoose.connect('mongodb+srv://root:<password>@skab.fpe6t.mongodb.net/<dbname>?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect('mongodb+srv://root:root@SKAB.fpe6t.mongodb.net/SKAB?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true});
 mongoose.set('useCreateIndex', true)
 //Get the default connection
 var db = mongoose.connection;

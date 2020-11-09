@@ -19,7 +19,10 @@ router.post("/register", async function(req, res, next){
     const user = await User.register(new User(
       {username:req.body.username, email: req.body.email}), req.body.password);
     console.log('user registered!');
-    res.redirect('/');
+    req.login(user, function(err) {
+  			if (err) return next(err);
+  			res.redirect('/');
+  		});
   } catch(err) {
     console.log('Error:', err);
     res.redirect('/register', err);
