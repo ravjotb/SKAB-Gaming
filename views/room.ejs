@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Game: <%=game._id%></title>
+    <link rel="stylesheet" href="../stylesheets/room.css">
+  </head>
+  <body>
+    <% include partials/navbar %>
+    <% include partials/flash-messages %>
+    <div class="lobby-container" id="lobby-page">
+      <h1><%=game.creator.username%>'s Game</h1>
+      <h3>Category: <small><%=game.category%></small></h3>
+      <h3>Current Users Joined</h3>
+      <ul>
+        <% var count=1;
+          game.activePlayers.forEach(function(player){%>
+          <li><big><%=count%>. <%=player.username%></big></li>
+          <%count++%>
+        <%});%>
+      </ul>
+      <br>
+      <p>Max Players: <%=game.players%></p>
+      <p>Waiting for <%= game.players - game.activePlayers.length%> players</p>
+      <%if(game.creator.id==currentUser._id) {%>
+        <div class="text-center">
+            <button class='btn btn-success' id="start" type="submit" name="button">Start</button>
+        </div>
+      <%}%>
+      <br>
+      <div class="text-center">
+        <button class="btn-danger" id="leave" type="button" name="leave">Leave</button>
+      </div>
+    </div>
+    <div class="container-fluid question-container" id="question-page">
+      <div class="question-div">
+        <h2 class="question-text"><%=game.questions[i].text%></h2>
+        <hr />
+      </div>
+      <div class="base-timer middle-div col-6">
+        <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <g class="base-timer__circle">
+            <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45" />
+          </g>
+        </svg>
+        <span id="base-timer-label class="base-timer__label"">
+
+        </span>
+      </div>
+      <div class="answers-div">
+        <div class="row">
+          <button class="col-6 btn btn-primary"><%=game.questions[i].options[0]%></button>
+          <button class="col-6 btn btn-primary"><%=game.questions[i].options[1]%></button>
+        </div>
+        <div class="row">
+          <button class="col-6 btn btn-primary"><%=game.questions[i].options[2]%></button>
+          <button class="col-6 btn btn-primary"><%=game.questions[i].options[3]%></button>
+        </div>
+      </div>
+    </div>
+    <br>
+    <button class="btn btn-danger" type="button" name="button">Leave</button>
+    <script type="text/javascript">
+
+      const TIME_LIMIT = <%=game.timeperq%>;
+      let timePassed = 0;
+      let timeLeft = TIME_LIMIT;
+      let timerInterval = null;
+
+      document.getElementById("base-timer-label").innerHTML = `${formatTimeLeft(timeLeft)}`
+      startTimer();
+
+      function formatTimeLeft(time) {
+        const minutes = Math.floor(time / 60);
+        let seconds = time % 60;
+
+        if (seconds < 10) {
+          seconds = `0${seconds}`;
+        }
+
+        return `${minutes}:${seconds}`;
+      }
+
+      function startTimer() {
+        timerInterval = setInterval(() => {
+
+          timePassed = timePassed += 1;
+          timeLeft = TIME_LIMIT - timePassed;
+          if (timeLeft === 0) {
+            clearInterval(timerInterval)
+          }
+
+          document.getElementById("base-timer-label").innerHTML = formatTimeLeft(timeLeft);
+        }, 1000);
+      }
+  </script>
+  </body>
+</html>

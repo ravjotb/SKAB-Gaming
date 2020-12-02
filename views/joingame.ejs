@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>List of Games</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body>
+     <% include partials/navbar %>
+     <% include partials/flash-messages %>
+    <h2>Join a Game!</h2><br>
+    <table>
+      <tr>
+        <th>Game ID</th>
+        <th>Game Owner</th>
+        <th>Capacity</th>
+        <th>Join</th>
+      </tr>
+      <%games.forEach(function(game){ %>
+        <%if(game.players!=game.activePlayers.length||game.started==true){%>
+          <tr>
+            <td><%=game.id %></td>
+            <td><%=game.creator.username%></td>
+            <td><%=game.activePlayers%>/<%=game.players%></td>
+            <td><form class="" action="/<%=game.id%>/room" method="get">
+              <input type="submit" name="" value="Join">
+            </form></td>
+          </tr>
+          <%}
+      });%>
+    </table>
+
+  </body>
+</html>

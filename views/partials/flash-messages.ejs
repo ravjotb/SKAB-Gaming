@@ -1,0 +1,16 @@
+<style media="screen">
+  .color-green{
+  color:green;
+}
+
+.color-red {
+  color: red;
+}
+</style>
+<% if(success && success.length) { %>
+    <h1 class="color-green"><%= success %></h1>
+<%}%>
+
+<% if(error && error.length) { %>
+    <h1 class="color-red"><%= error %></h1>
+<%}%>

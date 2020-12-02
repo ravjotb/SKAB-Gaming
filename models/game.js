@@ -9,15 +9,27 @@ const GameSchema= new Schema({
     ref: 'User'
   },
   category: String,
+  activePlayers: [{
+    type: Schema.Types.ObjectId,
+    ref: "User"
+  }],
   players: Number,
   timeperq: Number,
   questions: [{
     type: Schema.Types.ObjectId,
     ref: "Question"
   }],
-  connectioncode: {
+  started: {
+    type: Boolean,
+    default: false
+  },
+  currQuestion:{
     type: Number,
-    default: Math.floor(1000 + Math.random() * 9000)
+    default: -1
+  },
+  winner: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   }
 });
 module.exports=mongoose.model('Game', GameSchema);
