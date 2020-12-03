@@ -17,12 +17,12 @@
         <th>Join</th>
       </tr>
       <%games.forEach(function(game){ %>
-        <%if(game.players!=game.activePlayers.length||game.started==true){%>
+        <%if(game.players!=game.activePlayers.length && game.started==false){%>
           <tr>
             <td><%=game.id %></td>
             <td><%=game.creator.username%></td>
-            <td><%=game.activePlayers%>/<%=game.players%></td>
-            <td><form class="" action="/<%=game.id%>/room" method="get">
+            <td><%=game.activePlayers.length%>/<%=game.players%></td>
+            <td><form class="" action="/room/<%=game.id%>" method="get">
               <input type="submit" name="" value="Join">
             </form></td>
           </tr>
@@ -31,4 +31,7 @@
     </table>
 
   </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript">
+  </script>
 </html>

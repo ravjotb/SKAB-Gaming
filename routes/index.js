@@ -102,9 +102,10 @@ router.post('/created', async function(req, res, next){
       newGame.questions.push(newQuestion);
     }
       newGame.save();
-      res.redirect(`/${newGame._id}/room`);
+      res.redirect(`/room/${newGame._id}`);
     }
     catch(error){
+      req.session.error=error.message;
       console.log(error);
     }
 });
@@ -112,7 +113,6 @@ router.post('/created', async function(req, res, next){
 router.get('/join-game', isLoggedIn, async function(req, res, next){
   try {
     var games= await Game.find().populate('creator').exec();
-    console.log(games);
     res.render('joingame', {games});
 
   } catch (e) {
@@ -120,10 +120,11 @@ router.get('/join-game', isLoggedIn, async function(req, res, next){
   }
 });
 
-router.get('/:id/room', isLoggedIn, async function(req, res, next){
+router.get('/room/:id', isLoggedIn, async function(req, res, next){
   try{
-    var game= await Game.findById(req.params.id).populate('creator').populate('activePlayers').populate('questions').populate('winner').exec();
-    res.render('room', {game});
+    var game=await Game.findById(req.params.id).populate('creator').populate('activePlayers').populate('questions').populate('winner').exec();
+    if(game.started==false) res.render('room', {game: game, currentUserID:req.user._id});
+    else res.render('errorStarted', {game})
   }
   catch(error){
     console.log(error);

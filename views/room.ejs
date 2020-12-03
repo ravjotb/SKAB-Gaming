@@ -6,22 +6,20 @@
     <link rel="stylesheet" href="../stylesheets/room.css">
   </head>
   <body>
-    <% include partials/navbar %>
+    <% include partials/bootstrap %>
     <% include partials/flash-messages %>
+    <div class="error-container" id="game-started">
+      <h1>This game has already started...</h1>
+    </div>
     <div class="lobby-container" id="lobby-page">
       <h1><%=game.creator.username%>'s Game</h1>
       <h3>Category: <small><%=game.category%></small></h3>
       <h3>Current Users Joined</h3>
-      <ul>
-        <% var count=1;
-          game.activePlayers.forEach(function(player){%>
-          <li><big><%=count%>. <%=player.username%></big></li>
-          <%count++%>
-        <%});%>
+      <ul id="current-players">
       </ul>
       <br>
       <p>Max Players: <%=game.players%></p>
-      <p>Waiting for <%= game.players - game.activePlayers.length%> players</p>
+      <p id="waiting-for"></p>
       <%if(game.creator.id==currentUser._id) {%>
         <div class="text-center">
             <button class='btn btn-success' id="start" type="submit" name="button">Start</button>
@@ -30,11 +28,14 @@
       <br>
       <div class="text-center">
         <button class="btn-danger" id="leave" type="button" name="leave">Leave</button>
+        <br>
+        <br>
+        <p id="starting"></p>
       </div>
     </div>
     <div class="container-fluid question-container" id="question-page">
       <div class="question-div">
-        <h2 class="question-text"><%=game.questions[i].text%></h2>
+        <h2 class="question-text"><%=game.questions[0].text%></h2>
         <hr />
       </div>
       <div class="base-timer middle-div col-6">
@@ -43,56 +44,34 @@
             <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45" />
           </g>
         </svg>
-        <span id="base-timer-label class="base-timer__label"">
+        <span id="base-timer-label" class="base-timer__label">
 
         </span>
       </div>
       <div class="answers-div">
         <div class="row">
-          <button class="col-6 btn btn-primary"><%=game.questions[i].options[0]%></button>
-          <button class="col-6 btn btn-primary"><%=game.questions[i].options[1]%></button>
+          <button class="col btn btn-primary"><%=game.questions[0].options[0]%></button>
+          <div class="col"></div>
+          <button class="col btn btn-primary"><%=game.questions[0].options[1]%></button>
         </div>
         <div class="row">
-          <button class="col-6 btn btn-primary"><%=game.questions[i].options[2]%></button>
-          <button class="col-6 btn btn-primary"><%=game.questions[i].options[3]%></button>
+          <button class="col btn btn-primary"><%=game.questions[0].options[2]%></button>
+          <div class="col"></div>
+          <button class="col btn btn-primary"><%=game.questions[0].options[3]%></button>
         </div>
       </div>
+      <button class="btn btn-danger" type="button" name="button">Leave</button>
     </div>
     <br>
-    <button class="btn btn-danger" type="button" name="button">Leave</button>
-    <script type="text/javascript">
-
-      const TIME_LIMIT = <%=game.timeperq%>;
-      let timePassed = 0;
-      let timeLeft = TIME_LIMIT;
-      let timerInterval = null;
-
-      document.getElementById("base-timer-label").innerHTML = `${formatTimeLeft(timeLeft)}`
-      startTimer();
-
-      function formatTimeLeft(time) {
-        const minutes = Math.floor(time / 60);
-        let seconds = time % 60;
-
-        if (seconds < 10) {
-          seconds = `0${seconds}`;
-        }
-
-        return `${minutes}:${seconds}`;
-      }
-
-      function startTimer() {
-        timerInterval = setInterval(() => {
-
-          timePassed = timePassed += 1;
-          timeLeft = TIME_LIMIT - timePassed;
-          if (timeLeft === 0) {
-            clearInterval(timerInterval)
-          }
-
-          document.getElementById("base-timer-label").innerHTML = formatTimeLeft(timeLeft);
-        }, 1000);
-      }
-  </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var gameID='<%=game._id%>';
+      var timeperq= '<%=game.timeperq%>';
+      var started= '<%=game.started%>';
+      var currentPlayer='<%=currentUserID%>';
+      var gameCreator='<%=game.creator._id%>';
+      var playerUsername='<%=currentUser.username%>'
+    </script>
+    <script type="text/javascript" src="/javascripts/game.js"></script>
   </body>
 </html>

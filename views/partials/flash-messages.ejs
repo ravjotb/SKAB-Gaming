@@ -1,16 +1,26 @@
-<style media="screen">
-  .color-green{
-  color:green;
-}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <style media="screen">
+      .color-green{
+      color:green;
+    }
 
-.color-red {
-  color: red;
-}
-</style>
-<% if(success && success.length) { %>
-    <h1 class="color-green"><%= success %></h1>
-<%}%>
+    .color-red {
+      color: red;
+    }
+    </style>
+  </head>
+  <body>
+    <% if(success && success.length) { %>
+        <h1 class="color-green"><%= success %></h1>
+    <%}%>
 
-<% if(error && error.length) { %>
-    <h1 class="color-red"><%= error %></h1>
-<%}%>
+    <% if(error && error.length) { %>
+        <h1 class="color-red"><%= error %></h1>
+    <%}%>
+
+  </body>
+</html>
