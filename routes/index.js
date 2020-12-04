@@ -131,6 +131,20 @@ router.get('/room/:id', isLoggedIn, async function(req, res, next){
   }
 });
 
+router.get('/:id/result', isLoggedIn, async function(req, res, next){
+  try{
+    var game=await Game.findById(req.params.id).populate('creator').populate('activePlayers').populate('winner').exec();
+    if(!game.winner){
+      req.session.error="This game is not over yet";
+      res.redirect('/');
+    }
+    res.render('result', {game});
+  }
+  catch(err){
+    console.log(err);
+  }
+});
+
 
 router.get("/play", function (req, res, next) {
   res.render("question", {

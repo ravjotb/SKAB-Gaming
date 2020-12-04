@@ -13,3 +13,7 @@ li{
 #game-started{
   display:none;
 }
+
+#owner{
+  display:none;
+}

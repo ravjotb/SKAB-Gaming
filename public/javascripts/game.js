@@ -4,12 +4,23 @@ game.id=gameID;
 game.playerid=currentPlayer;
 game.creator=gameCreator;
 game.playerusername=playerUsername;
+game.i=0;
+game.playeranswer='';
 
 socket.emit("join", game)
 
 socket.on('confirmation', function(data) {
   console.log("Connected to room", data.gameSession._id);
-  if(game.playerid==game.creator) {
+  if(game.playerusername==data.gameSession.creator.username){
+    hide('lobby-page');
+    unhide('owner');
+    setTimeout(function(){
+      window.location.href="http://localhost:3000/";
+    }, 3000)
+  }
+  if(game.playerid==data.gameSession.activePlayers[0]._id) {
+    var start= document.getElementById('start-game');
+    start.innerHTML="<button class='btn btn-success' id='start' type='submit' name='button'>Start</button>";
     var startButton= document.getElementById('start');
     startButton.addEventListener('click', startGame);
   }
@@ -17,7 +28,7 @@ socket.on('confirmation', function(data) {
   if(game.playerid!=data.gameSession.activePlayers[data.gameSession.activePlayers.length-1]._id) {
     var newPlayerElement=document.createElement('li');
     newPlayerElement.innerHTML='<big>'+ data.gameSession.activePlayers[data.gameSession.activePlayers.length-1].username +' has joined</big>';
-    newPlayerElement.setAttribute('id', data.playerusername);
+    newPlayerElement.setAttribute('id', data.gameSession.activePlayers[data.gameSession.activePlayers.length-1].username);
     parentElement.appendChild(newPlayerElement);
   }
   else {
@@ -40,21 +51,104 @@ socket.on('playerDisconnected', function(data){
   playerDisconnected(data);
 });
 
+socket.on('gameOver', function(data){
+  if(data.correct){
+    if(game.playeranswer=='A'){
+      optionA.className="col btn btn-success"
+    }
+    else if (game.playeranswer=='B'){
+      optionB.className="col btn btn-success"
+    }
+    else if (game.playeranswer=='C'){
+      optionC.className="col btn btn-success"
+    }
+    else {
+      optionD.className="col btn btn-success"
+    }
+  }
+  else{
+    if(game.playeranswer=='A'){
+      optionA.className="col btn btn-danger"
+    }
+    else if (game.playeranswer=='B'){
+      optionB.className="col btn btn-danger"
+    }
+    else if (game.playeranswer=='C'){
+      optionC.className="col btn btn-danger"
+    }
+    else {
+      optionD.className="col btn btn-danger"
+    }
+  }
+  setTimeout(function(){
+    window.location.href=`http://localhost:3000/${data.gameSession._id}/result`;
+  }, 3000);
+});
+
 var leaveButton=document.getElementById('leave');
 leaveButton.addEventListener('click', function(){
   window.location.href="http://localhost:3000/";
 });
 
-var timeLimit = timeperq;
-let timePassed = 0;
-let timeLeft = timeLimit;
-let timerInterval = null;
+var leaveGame= document.getElementById('leave-game');
+leaveGame.addEventListener('click', function(){
+  window.location.href="http://localhost:3000/";
+});
 
+var optionA= document.getElementById('optiona');
+var optionB= document.getElementById('optionb');
+var optionC= document.getElementById('optionc');
+var optionD= document.getElementById('optiond');
+
+optionA.addEventListener('click', function(){
+  optionA.className="col btn btn-secondary"
+  optionB.className="col btn btn-light btn-outline-secondary";
+  optionC.className="col btn btn-light btn-outline-secondary";
+  optionD.className="col btn btn-light btn-outline-secondary";
+  game.playeranswer="A";
+});
+
+optionB.addEventListener('click', function(){
+  optionA.className="col btn btn-light btn-outline-secondary"
+  optionB.className="col btn btn-secondary";
+  optionC.className="col btn btn-light btn-outline-secondary";
+  optionD.className="col btn btn-light btn-outline-secondary";
+  game.playeranswer="B";
+});
+
+optionC.addEventListener('click', function(){
+  optionA.className="col btn btn-light btn-outline-secondary"
+  optionB.className="col btn btn-light btn-outline-secondary";
+  optionC.className="col btn btn-secondary";
+  optionD.className="col btn btn-light btn-outline-secondary";
+  game.playeranswer="C";
+});
+
+optionD.addEventListener('click', function(){
+  optionA.className="col btn btn-light btn-outline-secondary"
+  optionB.className="col btn btn-light btn-outline-secondary";
+  optionC.className="col btn btn-light btn-outline-secondary";
+  optionD.className="col btn btn-secondary";
+  game.playeranswer="D";
+});
+//timer function
+function startTimer() {
+  var timeLimit = timeperq;
+  let timerInterval = setInterval(() => {
+    timeLimit = timeLimit - 1;
+    if (timeLimit === 0) {
+      clearInterval(timerInterval)
+      socket.emit("endTimer", game);
+    }
+    document.getElementById("base-timer-label").innerHTML = `${timeLimit}`;
+  }, 1000);
+}
+//helper to hide elements
 function hide(elementID){
   let x= document.getElementById(elementID);
   x.style.display="none"
 }
-
+//helper to unhide elements
 function unhide(elementID){
   let x= document.getElementById(elementID);
   x.style.display="block"
@@ -65,49 +159,102 @@ function startGame(){
   socket.emit("startGame", game);
 }
 
-function gameStarted(index){
+//game start for everyone
+function gameStarted(gameSession){
   var seconds=6;
-  setTimeout(function(){
-    hide('lobby-page');
-    unhide('question-page');
-    startTimer();
-  }, 6000);
-
   var delay= setInterval(function(){
     seconds= seconds-1;
     document.getElementById("starting").innerHTML= 'Game starting in '+seconds.toString();
     if(seconds==0) clearInterval(delay);
   }, 1000);
 
+  setTimeout(function(){
+    hide('lobby-page');
+    unhide('question-page');
+    startTimer();
+    socket.on('nextQuestion', function(data){
+      game.i+=1;
+      if(data.correct){
+        if(game.playeranswer=='A'){
+          optionA.className="col btn btn-success"
+        }
+        else if (game.playeranswer=='B'){
+          optionB.className="col btn btn-success"
+        }
+        else if (game.playeranswer=='C'){
+          optionC.className="col btn btn-success"
+        }
+        else {
+          optionD.className="col btn btn-success"
+        }
+      }
+      else{
+        if(game.playeranswer=='A'){
+          optionA.className="col btn btn-danger"
+        }
+        else if (game.playeranswer=='B'){
+          optionB.className="col btn btn-danger"
+        }
+        else if (game.playeranswer=='C'){
+          optionC.className="col btn btn-danger"
+        }
+        else {
+          optionD.className="col btn btn-danger"
+        }
+      }
+      setTimeout(function(){
+        nextQuestion(data.gameSession, data.i);
+      }, 3000)
+
+    })
+  }, 6000);
+
 }
 
-function formatTimeLeft(time) {
-  const minutes = Math.floor(time / 60);
-  let seconds = time % 60;
-
-  if (seconds < 10) {
-    seconds = `0${seconds}`;
-  }
-
-  return `${minutes}:${seconds}`;
-}
-
-function startTimer() {
-  timerInterval = setInterval(() => {
-
-    timePassed = timePassed += 1;
-    timeLeft = timeLimit - timePassed;
-    if (timeLeft === 0) {
-      clearInterval(timerInterval)
-    }
-
-    document.getElementById("base-timer-label").innerHTML = formatTimeLeft(timeLeft);
-  }, 1000);
-}
-
+//handler for when a player leaves
 function playerDisconnected(data){
-  console.log("Player disconnected",data.playerid);
+  console.log("Player disconnected",data.username);
+  if(data.gameSession.activePlayers.length<2 && data.gameSession.started){
+    window.location.href-`http://localhost:3000/${game.id}/result`;
+  }
   hide(data.playerusername);
   var waitingFor= document.getElementById('waiting-for');
   waitingFor.innerHTML=`Joined: ${data.gameSession.activePlayers.length}/${data.gameSession.players}`;
+  if(game.playerid==data.gameSession.activePlayers[0]._id) {
+    var start= document.getElementById('start-game');
+    start.innerHTML="<button class='btn btn-success' id='start' type='submit' name='button'>Start</button>";
+    var startButton= document.getElementById('start');
+    startButton.addEventListener('click', startGame);
+  }
+}
+
+//handler to get the next question
+function nextQuestion(gameSession, index){
+  hide('question-page');
+  setTimeout(function(){
+    var questionText= document.getElementById('question-text');
+    questionText.innerHTML= gameSession.questions[index].text;
+
+    var optiona=document.getElementById('optiona');
+    optiona.innerHTML=gameSession.questions[index].options[0];
+
+    var optionb=document.getElementById('optionb');
+    optionb.innerHTML=gameSession.questions[index].options[1];
+
+    var optionc=document.getElementById('optionc');
+    optionc.innerHTML=gameSession.questions[index].options[2];
+
+    var optiond=document.getElementById('optiond');
+    optiond.innerHTML=gameSession.questions[index].options[3];
+
+    document.getElementById("base-timer-label").innerHTML =`${gameSession.timeperq}`
+    optionA.className="col btn btn-light btn-outline-secondary"
+    optionB.className="col btn btn-light btn-outline-secondary";
+    optionC.className="col btn btn-light btn-outline-secondary";
+    optionD.className="col btn btn-light btn-outline-secondary";
+
+    startTimer();
+    unhide('question-page');
+  }, 1000);
+
 }

@@ -27,9 +27,9 @@ const GameSchema= new Schema({
     type: Number,
     default: -1
   },
-  winner: {
+  winner: [{
     type: Schema.Types.ObjectId,
     ref: 'User'
-  }
+  }]
 });
 module.exports=mongoose.model('Game', GameSchema);

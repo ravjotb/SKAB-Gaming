@@ -8,9 +8,10 @@
   <body>
     <% include partials/bootstrap %>
     <% include partials/flash-messages %>
-    <div class="error-container" id="game-started">
-      <h1>This game has already started...</h1>
+    <div class="error-container" id="owner">
+      <h1>You made the questions, wouldn't be fair...</h1>
     </div>
+
     <div class="lobby-container" id="lobby-page">
       <h1><%=game.creator.username%>'s Game</h1>
       <h3>Category: <small><%=game.category%></small></h3>
@@ -20,11 +21,8 @@
       <br>
       <p>Max Players: <%=game.players%></p>
       <p id="waiting-for"></p>
-      <%if(game.creator.id==currentUser._id) {%>
-        <div class="text-center">
-            <button class='btn btn-success' id="start" type="submit" name="button">Start</button>
-        </div>
-      <%}%>
+      <div class="text-center" id="start-game">
+      </div>
       <br>
       <div class="text-center">
         <button class="btn-danger" id="leave" type="button" name="leave">Leave</button>
@@ -33,9 +31,10 @@
         <p id="starting"></p>
       </div>
     </div>
+
     <div class="container-fluid question-container" id="question-page">
       <div class="question-div">
-        <h2 class="question-text"><%=game.questions[0].text%></h2>
+        <h2 id="question-text" class="question-text"><%=game.questions[0].text%></h2>
         <hr />
       </div>
       <div class="base-timer middle-div col-6">
@@ -45,22 +44,22 @@
           </g>
         </svg>
         <span id="base-timer-label" class="base-timer__label">
-
+          <%=game.timeperq%>
         </span>
       </div>
-      <div class="answers-div">
+      <div class="answers-div" id="options">
         <div class="row">
-          <button class="col btn btn-primary"><%=game.questions[0].options[0]%></button>
+          <button id="optiona" class="col btn btn-light btn-outline-secondary"><%=game.questions[0].options[0]%></button>
           <div class="col"></div>
-          <button class="col btn btn-primary"><%=game.questions[0].options[1]%></button>
+          <button id="optionb" class="col btn btn-light btn-outline-secondary"><%=game.questions[0].options[1]%></button>
         </div>
         <div class="row">
-          <button class="col btn btn-primary"><%=game.questions[0].options[2]%></button>
+          <button id="optionc" class="col btn btn-light btn-outline-secondary"><%=game.questions[0].options[2]%></button>
           <div class="col"></div>
-          <button class="col btn btn-primary"><%=game.questions[0].options[3]%></button>
+          <button id="optiond" class="col btn btn-light btn-outline-secondary"><%=game.questions[0].options[3]%></button>
         </div>
       </div>
-      <button class="btn btn-danger" type="button" name="button">Leave</button>
+      <button id="leave-game" class="btn btn-secondary" type="button" name="button">Leave</button>
     </div>
     <br>
     <script src="/socket.io/socket.io.js"></script>
@@ -68,7 +67,7 @@
       var gameID='<%=game._id%>';
       var timeperq= '<%=game.timeperq%>';
       var started= '<%=game.started%>';
-      var currentPlayer='<%=currentUserID%>';
+      var currentPlayer='<%=currentUser._id%>';
       var gameCreator='<%=game.creator._id%>';
       var playerUsername='<%=currentUser.username%>'
     </script>

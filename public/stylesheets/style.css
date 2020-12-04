@@ -81,7 +81,8 @@
 
 .base-timer__label {
   position: absolute;
-
+  padding-right: 70px;
+  padding-bottom:50px;
   /* Size should match the parent container */
   width: 300px;
   height: 300px;

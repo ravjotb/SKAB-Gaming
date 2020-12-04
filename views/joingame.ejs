@@ -17,7 +17,7 @@
         <th>Join</th>
       </tr>
       <%games.forEach(function(game){ %>
-        <%if(game.players!=game.activePlayers.length && game.started==false){%>
+        <%if(game.players!=game.activePlayers.length && game.started==false && game.creator.username!=currentUser.username){%>
           <tr>
             <td><%=game.id %></td>
             <td><%=game.creator.username%></td>
