@@ -157,3 +157,9 @@ router.get("/play", function (req, res, next) {
   });
 });
 module.exports = router;
+
+
+
+router.get("/profile", function (req, res, next) {
+  res.render("profile")
+})
