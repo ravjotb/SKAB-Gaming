@@ -7,18 +7,36 @@ game.playerusername=playerUsername;
 game.i=0;
 game.playeranswer='';
 
-socket.emit("join", game)
+socket.emit("join", game);
+
+socket.on('game-full', function(){
+  hide('lobby-page');
+  unhide('game-full');
+  setTimeout(function(){
+    window.location.href="http://localhost:3000/";
+  }, 3000)
+})
+
+socket.on('alreadyStarted', function(){
+  hide('lobby-page');
+  unhide('game-started');
+  setTimeout(function(){
+    window.location.href="http://localhost:3000/";
+  }, 3000)
+})
+
+socket.on('owner', function(){
+  hide('lobby-page');
+  unhide('owner');
+  setTimeout(function(){
+    window.location.href="http://localhost:3000/";
+  }, 3000)
+})
 
 socket.on('confirmation', function(data) {
   console.log("Connected to room", data.gameSession._id);
-  if(game.playerusername==data.gameSession.creator.username){
-    hide('lobby-page');
-    unhide('owner');
-    setTimeout(function(){
-      window.location.href="http://localhost:3000/";
-    }, 3000)
-  }
-  if(game.playerid==data.gameSession.activePlayers[0]._id) {
+
+  if(game.playerid==data.gameSession.activePlayers[0]._id && data.gameSession.activePlayers.length>1) {
     var start= document.getElementById('start-game');
     start.innerHTML="<button class='btn btn-success' id='start' type='submit' name='button'>Start</button>";
     var startButton= document.getElementById('start');
@@ -52,37 +70,9 @@ socket.on('playerDisconnected', function(data){
 });
 
 socket.on('gameOver', function(data){
-  if(data.correct){
-    if(game.playeranswer=='A'){
-      optionA.className="col btn btn-success"
-    }
-    else if (game.playeranswer=='B'){
-      optionB.className="col btn btn-success"
-    }
-    else if (game.playeranswer=='C'){
-      optionC.className="col btn btn-success"
-    }
-    else {
-      optionD.className="col btn btn-success"
-    }
-  }
-  else{
-    if(game.playeranswer=='A'){
-      optionA.className="col btn btn-danger"
-    }
-    else if (game.playeranswer=='B'){
-      optionB.className="col btn btn-danger"
-    }
-    else if (game.playeranswer=='C'){
-      optionC.className="col btn btn-danger"
-    }
-    else {
-      optionD.className="col btn btn-danger"
-    }
-  }
   setTimeout(function(){
     window.location.href=`http://localhost:3000/${data.gameSession._id}/result`;
-  }, 3000);
+  }, 2000);
 });
 
 var leaveButton=document.getElementById('leave');
@@ -138,6 +128,10 @@ function startTimer() {
     timeLimit = timeLimit - 1;
     if (timeLimit === 0) {
       clearInterval(timerInterval)
+      optionA.disabled=true;
+      optionB.disabled=true;
+      optionC.disabled=true;
+      optionD.disabled=true;
       socket.emit("endTimer", game);
     }
     document.getElementById("base-timer-label").innerHTML = `${timeLimit}`;
@@ -167,12 +161,45 @@ function gameStarted(gameSession){
     document.getElementById("starting").innerHTML= 'Game starting in '+seconds.toString();
     if(seconds==0) clearInterval(delay);
   }, 1000);
-
   setTimeout(function(){
     hide('lobby-page');
     unhide('question-page');
     startTimer();
+
     socket.on('nextQuestion', function(data){
+      if(data.i==data.gameSession.questions.length){
+        if(data.correct){
+          if(game.playeranswer=='A'){
+            optionA.className="col btn btn-success"
+          }
+          else if (game.playeranswer=='B'){
+            optionB.className="col btn btn-success"
+          }
+          else if (game.playeranswer=='C'){
+            optionC.className="col btn btn-success"
+          }
+          else if (game.playeranswer=='D'){
+            optionD.className="col btn btn-success"
+          }
+        }
+        else{
+          if(game.playeranswer=='A'){
+            optionA.className="col btn btn-danger"
+          }
+          else if (game.playeranswer=='B'){
+            optionB.className="col btn btn-danger"
+          }
+          else if (game.playeranswer=='C'){
+            optionC.className="col btn btn-danger"
+          }
+          else if (game.playeranswer=='D'){
+            optionD.className="col btn btn-danger"
+          }
+        }
+        if(game.playerid==data.gameSession.activePlayers[0]._id) //only get one player to send endGame
+          socket.emit('endGame', game);
+        return;
+      }
       game.i+=1;
       if(data.correct){
         if(game.playeranswer=='A'){
@@ -184,7 +211,7 @@ function gameStarted(gameSession){
         else if (game.playeranswer=='C'){
           optionC.className="col btn btn-success"
         }
-        else {
+        else if (game.playeranswer=='D'){
           optionD.className="col btn btn-success"
         }
       }
@@ -198,7 +225,7 @@ function gameStarted(gameSession){
         else if (game.playeranswer=='C'){
           optionC.className="col btn btn-danger"
         }
-        else {
+        else if (game.playeranswer=='D'){
           optionD.className="col btn btn-danger"
         }
       }
@@ -231,6 +258,11 @@ function playerDisconnected(data){
 //handler to get the next question
 function nextQuestion(gameSession, index){
   hide('question-page');
+  game.playeranswer='';
+  optionA.disabled=false;
+  optionB.disabled=false;
+  optionC.disabled=false;
+  optionD.disabled=false;
   setTimeout(function(){
     var questionText= document.getElementById('question-text');
     questionText.innerHTML= gameSession.questions[index].text;

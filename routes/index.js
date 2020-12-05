@@ -123,8 +123,7 @@ router.get('/join-game', isLoggedIn, async function(req, res, next){
 router.get('/room/:id', isLoggedIn, async function(req, res, next){
   try{
     var game=await Game.findById(req.params.id).populate('creator').populate('activePlayers').populate('questions').populate('winner').exec();
-    if(game.started==false) res.render('room', {game: game, currentUserID:req.user._id});
-    else res.render('errorStarted', {game})
+    res.render('room', {game: game, currentUserID:req.user._id});
   }
   catch(error){
     console.log(error);

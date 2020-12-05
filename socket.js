@@ -8,7 +8,16 @@ const User= require('./models/user');
 var manager = io.of("/room").on('connection', function (socket) {
    socket.on("join", async function(game){
      try{
-       var gameSession= await Game.findById(game.id);
+       var user= await User.findById(game.playerid);
+       user.score=0;
+       await user.save();
+       var gameSession= await Game.findById(game.id).populate('creator');
+       if(game.playerusername==gameSession.creator.username){
+         socket.emit("owner");
+       }
+       if(gameSession.started){
+         socket.emit("alreadyStarted");
+       }
        socket.playerid=game.playerid;
        socket.gameid=game.id;
        socket.playerusername=game.playerusername;
@@ -28,8 +37,12 @@ var manager = io.of("/room").on('connection', function (socket) {
        gameSession.activePlayers.push(game.playerid);
        await gameSession.save();
        gameSession=await Game.findById(game.id).populate('creator').populate('activePlayers').populate('questions').populate('winner').exec();
+       if(gameSession.activePlayers.length>gameSession.players){
+         console.log("This is true");
+         socket.emit("game-full")
+       }
        data.gameSession=gameSession;
-       manager.to(game.id).emit('confirmation', data);
+       if(game.playerusername!=gameSession.creator.username) manager.to(game.id).emit('confirmation', data);
      }
      catch(error){
        console.log(error);
@@ -39,9 +52,9 @@ var manager = io.of("/room").on('connection', function (socket) {
    socket.on("startGame", async function(game){
     try{
      var gameSession= await Game.findById(game.id);
-     //gameSession.started=true;
+     gameSession.started=true;
      await gameSession.save();
-     gameSession= await Game.findById(game.id).populate('questions').exec();
+     gameSession= await Game.findById(game.id).populate('questions').populate('activePlayers').exec();
      manager.to(game.id).emit('gameStarted', gameSession);
     }
     catch(err){
@@ -53,9 +66,8 @@ var manager = io.of("/room").on('connection', function (socket) {
      try{
        var data={}
        var gameSession= await Game.findById(game.id).populate('activePlayers').populate('questions').exec();
-       console.log("Player's answer is", game.playeranswer);
        var user= await User.findById(game.playerid);
-       if(game.playeranswer===gameSession.questions[game.i].correctAnswer.toUpperCase()){
+         if(game.playeranswer===gameSession.questions[game.i].correctAnswer.toUpperCase()){
          var currentScore= user.score;
          user.score= currentScore+1;
          await user.save();
@@ -64,34 +76,46 @@ var manager = io.of("/room").on('connection', function (socket) {
        else{
          data.correct=false;
        }
-       if(game.i+1==gameSession.questions.length || gameSession.activePlayers.length<2){
-         let playersGame=await Game.findById(game.id).populate({
-           path:'activePlayers',
-           options: {sort: {'score': -1}}
-         });
-         gameSession.winner.push(playersGame.activePlayers[0]._id);
-         if(gameSession.activePlayers.length>1){
-           var i=1;
-           while(playersGame.activePlayers[i].score==playersGame.activePlayers[0].score){
-             gameSession.winner.push(playersGame.activePlayers[i]._id);
-             i++;
-           }
-         }
-         await gameSession.save();
-         data.gameSession=gameSession
-         socket.emit("gameOver", data);
-       }
-       else{
-         await gameSession.save();
-         data.gameSession=gameSession;
-         data.i=game.i+1;
-         socket.emit("nextQuestion", data);
-       }
+       await gameSession.save();
+       data.gameSession=gameSession;
+       data.i=game.i+1;
+       socket.emit("nextQuestion", data);
      }
      catch(err){
        console.log(err);
      }
    });
+
+   socket.on('endGame', async function(game){
+     try{
+       var data={};
+       var gameSession= await Game.findById(game.id).populate('activePlayers').populate('questions').exec();
+       let playersGame=await Game.findById(game.id).populate({
+         path:'activePlayers',
+         options: {sort: {'score': -1}}
+       });
+       if(!playersGame.winner.length)
+        gameSession.winner.push(playersGame.activePlayers[0]._id);
+       if(gameSession.activePlayers.length>1){
+         var i=1;
+         while(i<gameSession.questions.length && playersGame.activePlayers[i].score==playersGame.activePlayers[0].score){
+           gameSession.winner.push(playersGame.activePlayers[i]._id);
+           i++;
+         }
+       }
+       for(var j=0; j<gameSession.winner.length; j++){
+         var user= await User.findById(gameSession.winner[j]);
+         user.wins+=1;
+         await user.save();
+       }
+       await gameSession.save();
+       data.gameSession=gameSession
+       manager.to(game.id).emit("gameOver", data);
+    }
+    catch(err){
+      console.log(err);
+    }
+   })
 
    socket.on("disconnect", async function(){
      try{

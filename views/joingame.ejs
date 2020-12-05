@@ -16,14 +16,16 @@
         <th>Capacity</th>
         <th>Join</th>
       </tr>
-      <%games.forEach(function(game){ %>
-        <%if(game.players!=game.activePlayers.length && game.started==false && game.creator.username!=currentUser.username){%>
+      <%games.forEach(function(game){
+         if(game.players!=game.activePlayers.length && game.started==false && game.creator.username!=currentUser.username){%>
           <tr>
-            <td><%=game.id %></td>
+            <td><%=game.id%></td>
             <td><%=game.creator.username%></td>
             <td><%=game.activePlayers.length%>/<%=game.players%></td>
             <td><form class="" action="/room/<%=game.id%>" method="get">
-              <input type="submit" name="" value="Join">
+              <% if(game.creator._id!=currentUser._id) {%>
+                <input type="submit" name="" value="Join">
+              <%}%>
             </form></td>
           </tr>
           <%}
