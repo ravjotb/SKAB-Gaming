@@ -1,0 +1,27 @@
+<% include partials/navbar %>
+<% include partials/flash-messages %>
+
+<head>
+    <meta charset="utf-8">
+    <title>Profile</title>
+    <!-- <link rel="stylesheet" href="/stylesheets/profile.css" /> -->
+</head>
+
+<body>
+	<head>
+		<p class="headerP"> Profile
+		</p>
+	</head>
+	<main>
+		<div class="usersData">
+			<img src=<%=currentUser.image.path%> alt=profile pic>
+			<p class="usersname"> Username:
+				<td><%=currentUser.username%></td>
+			</p>
+			<p class="usersemail"> Email:
+				<td><%=currentUser.email%></td>
+			</p>
+			
+		</div>
+	</main>
+</body>
