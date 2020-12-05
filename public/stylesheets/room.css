@@ -1,0 +1,23 @@
+h1, h3, li, p, small, button{
+  text-align: center;
+}
+
+li{
+  list-style-type: none;
+}
+
+#question-page{
+  display: none;
+}
+
+#game-started{
+  display:none;
+}
+
+#owner{
+  display:none;
+}
+
+#game-full{
+  display:none;
+}

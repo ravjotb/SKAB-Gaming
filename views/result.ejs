@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <% include partials/bootstrap %>
+    <% include partials/flash-messages %>
+
+    <% if(game.winner.length>1){ %>
+      <h1>It was a tie!</h1>
+      <h3>Here are your winners:</h3>
+      <ul>
+        <% var won=false
+          for(var i=0;i<game.winner.length; i++){%>
+          <li><%=game.winner[i].username%></li>
+          <% if(currentUser._id.toString()==game.winner[i]._id.toString()) {
+              won=true;
+             }
+        }%>
+      </ul>
+      <%if(won==true) {%>
+        <h3>Congrats!</h3>
+      <%}
+        else { %>
+        <h3>Do better next time!</h3>
+      <%}
+     }
+      else {%>
+        <h1>Winner is <%=game.winner[0].username%></h1>
+        <% if(currentUser._id.toString() === game.winner[0]._id.toString()){%>
+            <h3>Congrats!</h3>
+        <%}
+        else {%>
+          <h3 =>Do better next time!</h3>
+        <%}
+      }
+      for(var i=0; i<game.activePlayers.length; i++){
+        if(currentUser._id.toString()==game.activePlayers[i]._id.toString()){%>
+            <h3>You scored <%=game.activePlayers[i].score%>/<%=game.questions.length%></h3>
+            <% break;
+        }
+      }%>
+
+  </body>
+
+</html>

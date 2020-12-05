@@ -41,6 +41,7 @@ function addQuestion(){
 
   correctAnswerLabel.innerHTML='Correct Answer (A,B,C, or D)';
   correctAnswerSelect.setAttribute('name', `correctanswer`);
+  correctAnswerSelect.setAttribute('pattern', "[A-Da-d]{1}")
 
   let linebreak5= document.createElement('br');
   addQuestionButton.parentNode.insertBefore(linebreak5, addQuestionButton);

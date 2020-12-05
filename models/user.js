@@ -14,6 +14,14 @@ const UserSchema = new Schema({
 	image: {
 		path: {type: String, default:'/images/default-profile.jpg'},
 		filename: String
+	},
+	score: {
+		type: Number,
+		default: 0
+	},
+	wins: {
+		type: Number,
+		default:0
 	}
 });
 

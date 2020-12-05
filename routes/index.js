@@ -4,9 +4,16 @@ const Question= require('../models/question');
 const Game= require('../models/game');
 const User= require('../models/user');
 const passport= require('passport');
+const {isLoggedIn}= require('../middleware/index')
 /* GET home page. */
 
-router.get("/", function (req, res, next) {
+router.get("/", async function (req, res, next) {
+/*  try{
+    await Question.deleteMany({})
+  }
+  catch(err){
+    console.log(err);
+  }*/
   res.render("index", { title: "SKAB-Gaming" });
 });
 
@@ -24,43 +31,68 @@ router.post("/register", async function(req, res, next){
   			res.redirect('/');
   		});
   } catch(err) {
-    console.log('Error:', err);
-    res.redirect('/register', err);
+    req.session.error=err.message;
+    res.redirect('/register');
   }
 });
 
 router.get("/login", function(req, res, next){
+  if (req.isAuthenticated()) return res.redirect('/');
+  if (req.query.returnTo){
+       req.session.redirectTo= req.headers.referer;
+  }
   res.render("login");
 })
 
-router.post("/login", passport.authenticate('local',{
-  successRedirect:'/',
-  failureRedirect:'/login'
-}))
+router.post("/login", async function(req, res, next){
+  const {username, password}= req.body;
+  try{
+    const {user} = await User.authenticate()(username, password);
+    if(!user) {
+      req.session.error="Incorrect username or password";
+      return next()
+    }
+    req.login(user, function(err){
+      if(err) {
+        return next();
+      };
+      req.session.success= `Welcome back, ${username}!`;
+      const redirectUrl= req.session.redirectTo ||'/';
+      delete req.session.redirectTo;
+      res.redirect(redirectUrl);
+    });
+  }
+  catch(err){
+    req.session.error="Incorrect username or password";
+    console.log(err);
+  }
+});
 
 router.get("/logout", function(req, res, next){
   req.logout();
-  res.redirect('/');
+  res.redirect('/login');
 })
 
-router.get('/create-game', function(req, res, next){
+router.get('/create-game', isLoggedIn, function(req, res, next){
   res.render('creategame', { });
 });
 
 router.post('/created', async function(req, res, next){
   try{
     var newGame= await Game.create({
+      creator: req.user._id,
       category: req.body.category,
       players: req.body.players,
       timeperq: req.body.time
     });
 
-    newGame= await Game.findById(newGame._id).populate('questions').exec();
+    newGame= await Game.findById(newGame._id);
 
+    newGame.activePlayers.push(req.user._id);
     for(var i=0; i<req.body.questions.length; i++){
       let fourChoices= new Array(4);
-      for(var j=i; j< i+4; j++){
-         fourChoices[j]=req.body.options[j];
+      for(var j=0; j<4; j++){
+        fourChoices[j]=req.body.options[j+(4*i)];
       }
       var newQuestion= await Question.create({
         text: req.body.questions[i],
@@ -70,13 +102,48 @@ router.post('/created', async function(req, res, next){
       newGame.questions.push(newQuestion);
     }
       newGame.save();
-      res.send('Game Created!')
+      res.redirect(`/room/${newGame._id}`);
     }
     catch(error){
+      req.session.error=error.message;
       console.log(error);
     }
-
 });
+
+router.get('/join-game', isLoggedIn, async function(req, res, next){
+  try {
+    var games= await Game.find().populate('creator').exec();
+    res.render('joingame', {games});
+
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+router.get('/room/:id', isLoggedIn, async function(req, res, next){
+  try{
+    var game=await Game.findById(req.params.id).populate('creator').populate('activePlayers').populate('questions').populate('winner').exec();
+    res.render('room', {game: game, currentUserID:req.user._id});
+  }
+  catch(error){
+    console.log(error);
+  }
+});
+
+router.get('/:id/result', isLoggedIn, async function(req, res, next){
+  try{
+    var game=await Game.findById(req.params.id).populate('creator').populate('activePlayers').populate('winner').exec();
+    if(!game.winner){
+      req.session.error="This game is not over yet";
+      res.redirect('/');
+    }
+    res.render('result', {game});
+  }
+  catch(err){
+    console.log(err);
+  }
+});
+
 
 router.get("/play", function (req, res, next) {
   res.render("question", {
