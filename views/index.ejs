@@ -14,25 +14,7 @@
 
     <!-- <span class="hpage"> -->
     <span>
-      <table class="leaderboard">
-        <tr>
-          <th>Leaderboard</th>
-          <tr>
-            <th>User</th>
-            <th>Wins</th>
-          </tr>
-          <%allusers.forEach(function(user){
-            if(user.wins !=0){%>
-              <tr>
-                <td class=img> <img class=ppimg src=<%=user.image.path%> alt=profile pic>
-                  <p class ="user"><%=user.username%></p>
-
-                </td>
-                <td><%=user.wins%></td>
-              </tr>
-              <%}
-          });%>
-      </table>
+      
       <span class="container-fluid-main-div">
       <h1 class="main-title">Welcome to SKAB-Gaming</h1>
       <p>
@@ -45,8 +27,34 @@
       <form action="/join-game" method="get">
         <button class="btn btn-success main-button"><i class="fas fa-play"></i>Join a Game!</button>
       </form>
-    </span>
+      
     </span>
 
+    <table class="leaderboard table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col" colspan="2">Leaderboard</th>
+        </tr>
+        <tr>
+          <th scope="col">User</th>
+          <th scope="col">Wins</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%allusers.forEach(function(user){
+          if(user.wins !=0){%>
+            <tr>
+              <td class=img> <img class=ppimg src=<%=user.image.path%> alt=profile pic>
+                <p class ="user"><%=user.username%></p>
+
+              </td>
+              <td><%=user.wins%></td>
+            </tr>
+            <%}
+        });%>
+        </tbody>
+    </table>
+    <br>
+  </span>
   </body>
 </html>

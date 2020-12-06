@@ -43,10 +43,6 @@
 
 }
 
-.middle-img{
-
-}
-
 .answers-div{
   width: 90%;
   margin-left: auto;
@@ -100,7 +96,9 @@
 }
 
 .leaderboard{
-  float:left;
+  text-align: center;
+  width: 40%;
+  margin: 5% auto auto auto;
 }
 .container-fluid-main-div
 {
