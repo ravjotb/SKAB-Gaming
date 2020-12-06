@@ -99,6 +99,22 @@
   font-size: 48px;
 }
 
+.leaderboard{
+  float:left;
+}
+.container-fluid-main-div
+{
+  text-align: center;
+}
+.main-title
+{
+  text-align: center;
+}
+
+.user
+{
+  overflow-wrap: break-all;
+}
 table, th, td {
   border: 1px solid black;
 }
