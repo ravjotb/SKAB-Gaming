@@ -29,7 +29,7 @@ cloudinary.config({
 // });
 router.get('/', async function(req, res, next){
   try {
-    var allusers= await User.find().sort({'wins':-1}).exec();
+    var allusers= await User.find().sort({'wins':-1}).limit(10).exec();
     res.render('index', {allusers});
 
   } catch (e) {
