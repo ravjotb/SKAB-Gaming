@@ -18,14 +18,23 @@ cloudinary.config({
 
 /* GET home page. */
 
-router.get("/", async function (req, res, next) {
-/*  try{
-    await Question.deleteMany({})
+// router.get("/", async function (req, res, next) {
+//   try{
+//     await Question.deleteMany({})
+//   }
+//   catch(err){
+//     console.log(err);
+//   }
+//   res.render("index", { title: "SKAB-Gaming" });
+// });
+router.get('/', async function(req, res, next){
+  try {
+    var allusers= await User.find().sort({'wins':-1}).exec();
+    res.render('index', {allusers});
+
+  } catch (e) {
+    console.log(e);
   }
-  catch(err){
-    console.log(err);
-  }*/
-  res.render("index", { title: "SKAB-Gaming" });
 });
 
 router.get("/register", function(req, res, next){
@@ -133,6 +142,16 @@ router.get('/join-game', isLoggedIn, async function(req, res, next){
   }
 });
 
+router.get('/profile', isLoggedIn, async function(req, res, next){
+  try {
+    var allusers= await User.find().sort({'wins':-1}).exec();
+    res.render('profile', {allusers});
+
+  } catch (e) {
+    console.log(e);
+  }
+});
+
 router.get('/room/:id', isLoggedIn, async function(req, res, next){
   try{
     var game=await Game.findById(req.params.id).populate('creator').populate('activePlayers').populate('questions').populate('winner').exec();
@@ -170,3 +189,6 @@ router.get("/play", function (req, res, next) {
   });
 });
 module.exports = router;
+
+
+
