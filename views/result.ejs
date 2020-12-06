@@ -42,7 +42,14 @@
             <% break;
         }
       }%>
+    <br>
+    <button type="button" id="home-button"class= "btn btn-secondary" name="button">Home</button>
 
   </body>
+  <script type="text/javascript">
+    var homeButton= document.getElementById('home-button').addEventListener('click', function(){
+      window.location.href='http://localhost:3000/'
+    })
+  </script>
 
 </html>

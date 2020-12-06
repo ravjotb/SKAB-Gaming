@@ -1,6 +1,6 @@
 var addQuestionButton= document.getElementById('addquestion');
 addQuestionButton.addEventListener('click', addQuestion);
-var questionNumber={'i': 2};
+var questionNumber={'i': 3};
 
 function addQuestion(){
   function insertAfter(newNode, existingNode) {

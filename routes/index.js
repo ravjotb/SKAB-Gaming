@@ -109,8 +109,7 @@ router.post('/created', async function(req, res, next){
     });
 
     newGame= await Game.findById(newGame._id);
-
-    newGame.activePlayers.push(req.user._id);
+    
     for(var i=0; i<req.body.questions.length; i++){
       let fourChoices= new Array(4);
       for(var j=0; j<4; j++){
@@ -189,6 +188,3 @@ router.get("/play", function (req, res, next) {
   });
 });
 module.exports = router;
-
-
-
