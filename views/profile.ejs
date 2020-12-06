@@ -1,27 +1,27 @@
-<% include partials/navbar %>
-<% include partials/flash-messages %>
-
-<head>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
     <meta charset="utf-8">
-    <title>Profile</title>
-    <!-- <link rel="stylesheet" href="/stylesheets/profile.css" /> -->
-</head>
+    <title>List of Games</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body>
+     <% include partials/navbar %>
+     <% include partials/flash-messages %>
+     <div class="usersData">
+      <img src=<%=currentUser.image.path%> alt=profile pic>
+      <p class="usersname"> Username:
+        <td><%=currentUser.username%></td>
+      </p>
+      <p class="usersemail"> Email:
+        <td><%=currentUser.email%></td>
+      </p>
+      <p class="usersemail"> Wins:
+        <td><%=currentUser.wins%></td>
+      </p>
+    </div>
+    
 
-<body>
-	<head>
-		<p class="headerP"> Profile
-		</p>
-	</head>
-	<main>
-		<div class="usersData">
-			<img src=<%=currentUser.image.path%> alt=profile pic>
-			<p class="usersname"> Username:
-				<td><%=currentUser.username%></td>
-			</p>
-			<p class="usersemail"> Email:
-				<td><%=currentUser.email%></td>
-			</p>
-			
-		</div>
-	</main>
-</body>
+  </body>
+ 
+</html>
