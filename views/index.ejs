@@ -3,26 +3,50 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <title>SKAB-Gaming</title>
     <!-- Bootstrap CDN -->
   </head>
   <body>
    <% include partials/navbar %>
     <!-- Nav Bar -->
 
-    <div class="container-fluid main-div">
-      <h1 class="main-title">Welcome to <%= title %></h1>
+
+    <!-- <span class="hpage"> -->
+    <span>
+      <table class="leaderboard">
+        <tr>
+          <th>Leaderboard</th>
+          <tr>
+            <th>User</th>
+            <th>Wins</th>
+          </tr>
+          <%allusers.forEach(function(user){
+            if(user.wins !=0){%>
+              <tr>
+                <td> <img src=<%=user.image.path%> alt=profile pic>
+                  <p class ="user"><%=user.username%></p>
+
+                </td>
+                <td><%=user.wins%></td>
+              </tr>
+              <%}
+          });%>
+      </table>
+      <span class="container-fluid-main-div">
+      <h1 class="main-title">Welcome to SKAB-Gaming</h1>
       <p>
-        The newest version of your loved classic game <%= title %> is online now. One of the best games in the world can be played online with many other fans. The quality of the game &
+        The newest version of your loved classic game SKAB-Gaming is online now. One of the best games in the world can be played online with many other fans. The quality of the game &
         the multiplayer functions in the platform can grab you and keep you entertained online with
         users worldwide. Play more, learn more and stay at the top of our charts to receive the best
-        rewards for our <%= title %> online.
+        rewards for our SKAB-Gaming online.
       </p>
 
       <form action="/join-game" method="get">
         <button class="btn btn-success main-button"><i class="fas fa-play"></i>Join a Game!</button>
       </form>
-    </div>
+    </span>
+    </span>
 
   </body>
 </html>
