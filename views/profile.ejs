@@ -9,14 +9,15 @@
      <% include partials/navbar %>
      <% include partials/flash-messages %>
      <div class="usersData">
-      <img class=ppimg src=<%=currentUser.image.path%> alt=profile pic>
-      <p class="usersname"> Username:
+      <p class= Ptitle> Profile </p>
+      <img class=ppimg2 src=<%=currentUser.image.path%> alt=profile pic>
+      <p class="profiletext"> Username:
         <td><%=currentUser.username%></td>
       </p>
-      <p class="usersemail"> Email:
+      <p class="profiletext"> Email:
         <td><%=currentUser.email%></td>
       </p>
-      <p class="usersemail"> Wins:
+      <p class="profiletext"> Wins:
         <td><%=currentUser.wins%></td>
       </p>
     </div>

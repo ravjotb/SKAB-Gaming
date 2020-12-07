@@ -118,6 +118,47 @@
   height: 100px;
   width: 100px;
 }
+.ppimg2{
+  height: 120px;
+  width: 120px;
+  padding-bottom: 16px;
+  padding-left:16px;
+   
+  
+}
+
+.Ptitle
+{
+  padding-left: 16px;
+
+
+
+  font-size: 28px;
+  font-style: bold;
+  font-color: white;
+  color:white;
+  background-color: #343a40; 
+  font-family: "Roboto", sans-serif;
+  width:470px;
+}
+.usersData
+{
+  background-color: #343a40; 
+  color: white;
+  width: 16px;
+
+}
+.profiletext
+{
+  font-family: "Roboto", sans-serif;
+  padding-left: 16px;
+  background-color: #343a40; 
+  color: white;
+  max-width: 800px;
+  min-width: 400px;
+  
+  word-wrap:break-word;
+}
 table, th, td {
   border: 1px solid black;
 }
