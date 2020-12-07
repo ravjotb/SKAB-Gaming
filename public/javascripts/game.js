@@ -38,6 +38,7 @@ socket.on('confirmation', function(data) {
 
   if(game.playerid==data.gameSession.activePlayers[0]._id && data.gameSession.activePlayers.length>1) {
     var start= document.getElementById('start-game');
+    unhide('start-game');
     start.innerHTML="<button class='btn btn-success' id='start' type='submit' name='button'>Start</button>";
     var startButton= document.getElementById('start');
     startButton.addEventListener('click', startGame);
@@ -240,9 +241,11 @@ function gameStarted(gameSession){
 
 //handler for when a player leaves
 function playerDisconnected(data){
-  console.log("Player disconnected",data.username);
   if(data.gameSession.activePlayers.length<2 && data.gameSession.started){
-    window.location.href-`http://localhost:3000/${game.id}/result`;
+    window.location.href=`http://localhost:3000/${game.id}/result`;
+  }
+  if(game.playerid==data.gameSession.activePlayers[0]._id && data.gameSession.activePlayers.length<=1) {
+    hide('start-game');
   }
   hide(data.playerusername);
   var waitingFor= document.getElementById('waiting-for');

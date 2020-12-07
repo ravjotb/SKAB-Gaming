@@ -44,16 +44,12 @@ router.get("/register", function(req, res, next){
 
 router.post("/register", upload.single('image'), async function(req, res, next){
   try {
-    if(req.file){
-      let image= await cloudinary.v2.uploader.upload(req.file.path);
-      req.body.image={'path': image.url, 'filename':image.public_id};
-      const user = await User.register(new User(
-        {username:req.body.username, email: req.body.email, image: req.body.image}), req.body.password);
-    }
-    else{
-      const user = await User.register(new User(
-        {username:req.body.username, email: req.body.email}), req.body.password);
-    }
+
+    let image= await cloudinary.v2.uploader.upload(req.file.path);
+    req.body.image={'path': image.url, 'filename':image.public_id};
+    const user = await User.register(new User(
+      {username:req.body.username, email: req.body.email, image: req.body.image}), req.body.password);
+
     console.log('user registered!');
     req.login(user, function(err) {
   			if (err) return next(err);
