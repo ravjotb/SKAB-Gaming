@@ -6,6 +6,7 @@ const upload= multer({'dest': 'uploads/'});
 const Question= require('../models/question');
 const Game= require('../models/game');
 const User= require('../models/user');
+const {Chat}= require('../models/chat');
 const passport= require('passport');
 const {isLoggedIn}= require('../middleware/index')
 const cloudinary = require('cloudinary');
@@ -43,10 +44,16 @@ router.get("/register", function(req, res, next){
 
 router.post("/register", upload.single('image'), async function(req, res, next){
   try {
-    let image= await cloudinary.v2.uploader.upload(req.file.path);
-    req.body.image={'path': image.url, 'filename':image.public_id};
-    const user = await User.register(new User(
-      {username:req.body.username, email: req.body.email, image: req.body.image}), req.body.password);
+    if(req.file){
+      let image= await cloudinary.v2.uploader.upload(req.file.path);
+      req.body.image={'path': image.url, 'filename':image.public_id};
+      const user = await User.register(new User(
+        {username:req.body.username, email: req.body.email, image: req.body.image}), req.body.password);
+    }
+    else{
+      const user = await User.register(new User(
+        {username:req.body.username, email: req.body.email}), req.body.password);
+    }
     console.log('user registered!');
     req.login(user, function(err) {
   			if (err) return next(err);
@@ -186,10 +193,16 @@ router.get('/chat', isLoggedIn, async function(req, res, next){
 });
 
 router.get('/chat/getall', async (req, res) => {
+  try{
     res.setHeader("Content-Type", "application/json");
     res.statusCode = 200;
     let data = await Chat.find({ chatID: req.query.id });
     res.json(data);
+  }
+  catch(err){
+    console.log(err);
+  }
+
 });
 
 router.get("/play", function (req, res, next) {
