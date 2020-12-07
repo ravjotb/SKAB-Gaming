@@ -4,6 +4,7 @@ var socketAPI= {};
 const Question= require('./models/question');
 const Game= require('./models/game');
 const User= require('./models/user');
+const {Chat}= require('./models/chat');
 
 var manager = io.of("/room").on('connection', function (socket) {
    socket.on("join", async function(game){
@@ -135,5 +136,21 @@ var manager = io.of("/room").on('connection', function (socket) {
    });
 })
 
+var manager2= io.of("/chat").on('connection', function (socket){
+  console.log('User connected');
+
+  socket.on('message', (data) => {
+      let message = JSON.parse(data);
+
+      let chatMessage = new Chat(message);
+      chatMessage.save();
+
+      socket.broadcast.emit("received",JSON.stringify(chatMessage));
+    });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
 socketAPI.io=io;
 module.exports=socketAPI;

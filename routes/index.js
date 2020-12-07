@@ -20,7 +20,7 @@ cloudinary.config({
 
 // router.get("/", async function (req, res, next) {
 //   try{
-//     await Question.deleteMany({})
+//     await Game.deleteMany({})
 //   }
 //   catch(err){
 //     console.log(err);
@@ -109,7 +109,7 @@ router.post('/created', async function(req, res, next){
     });
 
     newGame= await Game.findById(newGame._id);
-    
+
     for(var i=0; i<req.body.questions.length; i++){
       let fourChoices= new Array(4);
       for(var j=0; j<4; j++){
@@ -175,6 +175,22 @@ router.get('/:id/result', isLoggedIn, async function(req, res, next){
   }
 });
 
+router.get('/chat', isLoggedIn, async function(req, res, next){
+  try{
+    var user = await User.findById(req.user._id);
+    res.render('chat', {user});
+  }
+  catch(err){
+    console.log(err);
+  }
+});
+
+router.get('/chat/getall', async (req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    res.statusCode = 200;
+    let data = await Chat.find({ chatID: req.query.id });
+    res.json(data);
+});
 
 router.get("/play", function (req, res, next) {
   res.render("question", {
